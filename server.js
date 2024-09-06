@@ -26,5 +26,9 @@ app.use('/api/admin', bookingRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', feedbackRoutes);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello vercel' });
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
