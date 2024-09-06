@@ -41,6 +41,16 @@ const bookingSchema = new mongoose.Schema({
   proof_document: {
     type: String,
   }, // Path to uploaded proof
+  total_booking_price: {
+    type: Number,
+    required: true, // Assuming it's a required field
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'confirmed'],
+    default: 'pending', // Default status is 'pending'
+    required: true,
+  },
   created_at: { type: Date, default: Date.now },
 });
 

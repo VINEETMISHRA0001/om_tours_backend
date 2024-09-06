@@ -1,5 +1,5 @@
 const Booking = require('../models/booking.model');
-const Vehicle = require('../models/vehicle.model'); // Assuming you have a Vehicle model
+const Vehicle = require('../models/vehicle.model');
 const nodemailer = require('nodemailer');
 
 // Create Booking
@@ -18,6 +18,8 @@ exports.createBooking = async (req, res) => {
       ...req.body,
       vehicle: req.body.vehicleId,
       proof_document: req.file ? `/uploads/docs/${req.file.filename}` : null,
+      total_booking_price: req.body.total_booking_price, // New field
+      status: req.body.status || 'pending', // New field, default to 'pending'
     });
     await booking.save();
 
@@ -53,22 +55,13 @@ const sendBookingConfirmation = async (booking, vehicle) => {
     subject: 'Om Tours - Your Tour & Vehicle Details',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-        
-        <!-- Header Section -->
         <div style="background-color: #0072CE; padding: 20px; color: white; text-align: center;">
           <h1 style="margin: 0;">Om Tours</h1>
           <p style="margin: 0; font-size: 16px;">Your Travel Partner</p>
         </div>
-        
-        <!-- Order Status Section -->
         <div style="padding: 20px; text-align: center;">
-          <h2 style="color: #333; margin-bottom: 5px;">Your Booking  is Confirmed!</h2>
-       
+          <h2 style="color: #333; margin-bottom: 5px;">Your Booking is Confirmed!</h2>
         </div>
-        
-      
-        
-        <!-- Trip Details Section -->
         <div style="padding: 20px; border: 1px solid #ddd; margin: 20px 0; background-color: #fff;">
           <h3 style="margin: 0 0 10px; color: #333;">Trip Details</h3>
           <p style="color: #555; margin: 5px 0;"><strong>No. of Members:</strong> ${
@@ -83,9 +76,10 @@ const sendBookingConfirmation = async (booking, vehicle) => {
           <p style="color: #555; margin: 5px 0;"><strong>Trip To:</strong> ${
             booking.trip_to
           }</p>
+          <p style="color: #555; margin: 5px 0;"><strong>Total Booking Price:</strong> $${
+            booking.total_booking_price
+          }</p>
         </div>
-  
-        <!-- Vehicle Details Section -->
         <div style="padding: 20px; border: 1px solid #ddd; margin: 20px 0; background-color: #fff;">
           <h3 style="margin: 0 0 10px; color: #333;">Vehicle Details</h3>
           <p style="color: #555; margin: 5px 0;"><strong>Vehicle Name:</strong> ${
@@ -98,13 +92,9 @@ const sendBookingConfirmation = async (booking, vehicle) => {
             vehicle.vin
           }</p>
         </div>
-    
-        <!-- Track Package Button -->
         <div style="padding: 10px 0; text-align: center;">
           <a href="https://trackinglink.com" style="display: inline-block; padding: 12px 20px; background-color: #0072CE; color: white; text-decoration: none; border-radius: 5px;">Track Package</a>
         </div>
-  
-        <!-- Footer Section -->
         <div style="background-color: #0072CE; padding: 10px; text-align: center; color: white;">
           <p style="margin: 0;">&copy; ${new Date().getFullYear()} Om Tours. All rights reserved.</p>
         </div>
@@ -148,7 +138,6 @@ exports.getBookingById = async (req, res) => {
 // Update Booking by ID
 exports.updateBooking = async (req, res) => {
   try {
-    // Find the booking by ID
     const booking = await Booking.findById(req.params.id);
     if (!booking) {
       return res
@@ -156,7 +145,7 @@ exports.updateBooking = async (req, res) => {
         .json({ success: false, message: 'Booking not found' });
     }
 
-    // If a vehicle ID is being updated, ensure the vehicle exists
+    // Update vehicle if provided
     if (req.body.vehicleId) {
       const vehicle = await Vehicle.findById(req.body.vehicleId);
       if (!vehicle) {
@@ -164,10 +153,10 @@ exports.updateBooking = async (req, res) => {
           .status(404)
           .json({ success: false, message: 'Vehicle not found' });
       }
-      booking.vehicle = req.body.vehicleId; // Update vehicle reference
+      booking.vehicle = req.body.vehicleId;
     }
 
-    // Update other booking details
+    // Update other booking fields
     Object.assign(booking, req.body);
 
     // If a new document is uploaded, update the proof_document path
@@ -188,12 +177,9 @@ exports.updateBooking = async (req, res) => {
 };
 
 // Delete Booking by ID
-// Delete Booking by ID
 exports.deleteBooking = async (req, res) => {
   try {
-    // Find the booking by ID and delete it
     const booking = await Booking.findByIdAndDelete(req.params.id);
-
     if (!booking) {
       return res
         .status(404)
@@ -206,5 +192,29 @@ exports.deleteBooking = async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+exports.getTotalProfit = async (req, res) => {
+  try {
+    // Fetch all bookings
+    const bookings = await Booking.find();
+
+    // Calculate the total profit by summing up the 'amount' field from all bookings
+    const totalProfit = bookings.reduce(
+      (total, booking) => total + booking.total_booking_price,
+      0
+    );
+
+    res.status(200).json({
+      success: true,
+      totalProfit,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to calculate total profit',
+      error: err.message,
+    });
   }
 };

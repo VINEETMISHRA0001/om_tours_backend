@@ -22,6 +22,7 @@ router.get('/bookings', bookingController.getAllBookings);
 
 // Get a single booking by ID (with vehicle details)
 router.get('/bookings/:id', bookingController.getBookingById);
+router.get('/total-profit', bookingController.getTotalProfit);
 
 // // Update a booking by ID
 router.put(
