@@ -72,12 +72,16 @@ exports.verifyEmail = async (req, res) => {
 };
 
 //// login
+const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Update this to the correct path to your User model
+
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     console.log('Received request:', req.body);
 
+    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       console.log('User not found');
@@ -99,7 +103,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Email not verified' });
     }
 
-    // Generate token and return
+    // Generate token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -107,7 +111,15 @@ exports.login = async (req, res) => {
     );
     console.log('Token generated:', token);
 
-    res.status(200).json({ token });
+    // Send user data (excluding password) and token in response
+    res.status(200).json({
+      token,
+      user: {
+        email: user.email,
+        name: user.name, // Include other user fields as needed
+        // Avoid sending sensitive information such as passwords
+      },
+    });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ message: 'Server error' });
