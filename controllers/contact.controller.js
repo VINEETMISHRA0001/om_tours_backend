@@ -24,7 +24,6 @@ exports.createContactMessage = async (req, res) => {
       .json({ success: false, message: 'All fields are required.' });
   }
 
-  // Validation for email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res
@@ -33,13 +32,7 @@ exports.createContactMessage = async (req, res) => {
   }
 
   try {
-    // Save contact message to the database
-    const contact = new Contact({
-      mobile,
-      email,
-      message,
-      thoughts,
-    });
+    const contact = new Contact({ mobile, email, message, thoughts });
     await contact.save();
 
     // Send email notification
@@ -57,17 +50,96 @@ exports.createContactMessage = async (req, res) => {
         <p>${thoughts}</p>
       `,
     };
-
     await transporter.sendMail(mailOptions);
 
     res
       .status(201)
       .json({ success: true, message: 'Message sent successfully.' });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to send message.',
-      error: error.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Failed to send message.',
+        error: error.message,
+      });
+  }
+};
+
+// Delete a contact message by ID
+exports.deleteContactMessage = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const contact = await Contact.findByIdAndDelete(id);
+    if (!contact) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Contact not found.' });
+    }
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: 'Contact message deleted successfully.',
+      });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Failed to delete contact message.',
+        error: error.message,
+      });
+  }
+};
+
+// Edit a contact message by ID
+exports.editContactMessage = async (req, res) => {
+  const { id } = req.params;
+  const { mobile, email, message, thoughts } = req.body;
+
+  try {
+    const updatedContact = await Contact.findByIdAndUpdate(
+      id,
+      { mobile, email, message, thoughts },
+      { new: true, runValidators: true } // Return the updated document
+    );
+    if (!updatedContact) {
+      return res
+        .status(404)
+        .json({ success: false, message: 'Contact not found.' });
+    }
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: 'Contact message updated successfully.',
+        data: updatedContact,
+      });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Failed to update contact message.',
+        error: error.message,
+      });
+  }
+};
+
+// Get all contact messages
+exports.getAllContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find();
+    res.status(200).json({ success: true, data: contacts });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: 'Failed to retrieve contacts.',
+        error: error.message,
+      });
   }
 };
