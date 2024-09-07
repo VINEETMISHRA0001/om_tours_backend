@@ -71,9 +71,7 @@ exports.verifyEmail = async (req, res) => {
   }
 };
 
-//// login
-const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Update this to the correct path to your User model
+// Update this to the correct path to your User model
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
