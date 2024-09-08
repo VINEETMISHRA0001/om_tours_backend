@@ -14,13 +14,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(
-  cors({
-    origin: 'https://amin-om-tours.vercel.app',
-    methods: 'GET,POST,PUT,DELETE',
-    allowedHeaders: 'Content-Type,Authorization',
-  })
-);
+
 app.use(express.json());
 app.use(morgan('dev'));
 
