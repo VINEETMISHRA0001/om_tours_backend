@@ -18,7 +18,6 @@ app.use(
   cors({
     origin: 'https://amin-om-tours.vercel.app',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
