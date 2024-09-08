@@ -8,12 +8,7 @@ const {
 } = require('../middlewares/multer');
 
 // Routes for Vehicle operations
-router.post(
-  '/new-vehicle',
-  uploadVehicleImages,
-  resizeVehicleImages,
-  vehicleController.createVehicle
-); // Handle image uploads and resizing
+router.post('/new-vehicle', vehicleController.createVehicle); // Handle image uploads and resizing
 
 router.get('/vehicles', vehicleController.getAllVehicles);
 router.get('/vehicles/:id', vehicleController.getVehicleById);
