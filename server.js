@@ -19,12 +19,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['https://amin-om-tours-drab.vercel.app'], // Allows all origins, adjust as needed
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    origin: 'https://amin-om-tours-drab.vercel.app', // Allow requests from this origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   })
 );
-
 app.use(morgan('dev'));
 
 // Serve static files from the 'public/uploads' folder
