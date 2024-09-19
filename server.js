@@ -19,7 +19,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['https://amin-om-tours-drab.vercel.app/'], // Allows all origins, adjust as needed
+    origin: ['https://amin-om-tours-drab.vercel.app'], // Allows all origins, adjust as needed
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
