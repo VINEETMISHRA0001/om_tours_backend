@@ -19,9 +19,9 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: '*', // Allows all origins, adjust as needed
+    origin: ['https://amin-om-tours.vercel.app'], // Allows all origins, adjust as needed
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
   })
 );
 
