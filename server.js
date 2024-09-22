@@ -8,6 +8,7 @@ const vehicleRoutes = require('./routes/vehicleRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const feedbackRoutes = require('./routes/feedbackRoutes');
+const tourRoutes = require('./routes/tourRoutes');
 const morgan = require('morgan');
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use('/api/admin', vehicleRoutes);
 app.use('/api/admin', bookingRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/users', feedbackRoutes);
+app.use('/api/tours', tourRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
