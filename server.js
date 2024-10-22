@@ -20,7 +20,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: ['https://amin-om-tours-drab.vercel.app', 'http://localhost:5173'], // Your frontend URL
+    origin: [
+      'https://amin-om-tours-drab.vercel.app',
+      'http://localhost:5173',
+      'https://repo2-om-tours.vercel.app/vehicles',
+    ], // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   })
