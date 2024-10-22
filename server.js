@@ -23,7 +23,7 @@ app.use(
     origin: [
       'https://amin-om-tours-drab.vercel.app',
       'http://localhost:5173',
-      'https://repo2-om-tours.vercel.app/vehicles',
+      'https://repo2-om-tours.vercel.app/',
     ], // Your frontend URL
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
